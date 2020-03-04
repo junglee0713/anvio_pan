@@ -1,0 +1,13 @@
+all:
+  root: '/scr1/users/leej39/Cdiff_pan'
+  contig_dir: '/scr1/users/leej39/Cdiff_pan/contigs'
+  admin_email: 'junglee0713@gmail.com' 
+
+reformat:
+  min_contig_length: 2000
+
+hmm:
+  threads: 4
+
+ncbi_cog:
+  threads: 4
