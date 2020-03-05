@@ -4,6 +4,9 @@ import re
 
 contig_dir = config['all']['contig_dir']
 anvio_output_dir = config['all']['root'] + '/anvio_output'
+genome_storage_fp = anvio_output_dir + '/' + config['all']['project_name'] + '-GENOMES.db'
+pangenome_output_dir = anvio_output_dir + '/pangenome_output'
+pangenome_result = pangenome_output_dir + '/' + config['all']['project_name'] + '-PAN.db'
 
 files, = glob_wildcards(contig_dir + '/{file}.fa')
 
@@ -19,11 +22,48 @@ def get_external_genome_path(contig_db_list, output_fp):
         for db in contig_db_list:
             name = re.sub(anvio_output_dir + '/', '', db)
             name = re.sub('/contigs.db', '', name)
+            name = re.sub('-contigs', '', name)
+            name = re.sub('-|\.', '_', name) 
             f.write(name + '\t' + db + '\n')
 
 rule all:
     input: 
+        pangenome_result
+
+rule run_pangenome:
+    input:
+        genome_storage_fp
+    output:
+        pangenome_result
+    threads:
+        config['pan_genome']['threads']
+    params:
+        project_name = config['all']['project_name'],
+        pangenome_output_dir = pangenome_output_dir, 
+        minbit = config['pan_genome']['minbit'],
+        mcl_inflation = config['pan_genome']['mcl_inflation']
+    shell:
+        """
+            anvi-pan-genome --genomes-storage {input} \
+                --project-name {params.project_name} \
+                --output-dir {params.pangenome_output_dir} \
+                --num-threads {threads} \
+                --minbit {params.minbit} \
+                --mcl-inflation {params.mcl_inflation} \
+                --use-ncbi-blast
+        """
+
+rule build_genome_storage:
+    input:
         anvio_output_dir + '/external_genome_path.tsv'
+    output:
+        genome_storage_fp
+    shell:
+        """
+            anvi-gen-genomes-storage \
+                --external-genomes {input} \
+                --output-file {output}
+        """
 
 rule external_genome_path:
     input:

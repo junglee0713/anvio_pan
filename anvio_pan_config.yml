@@ -1,4 +1,5 @@
 all:
+  project_name: 'Cdiff_Redding'
   root: '/scr1/users/leej39/Cdiff_pan'
   contig_dir: '/scr1/users/leej39/Cdiff_pan/contigs'
   admin_email: 'junglee0713@gmail.com' 
@@ -11,3 +12,8 @@ hmm:
 
 ncbi_cog:
   threads: 4
+
+pan_genome:
+  threads: 8
+  minbit: 0.5
+  mcl_inflation: 10
