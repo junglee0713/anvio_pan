@@ -3,8 +3,6 @@
 
 - This borrows lots of scripts from https://github.com/sunbeam-labs/sbx_anvio
 
-- Run under an environment with anvio-6.1 installed in it. Once you installed anvio-6.1, run `anvi-setup-ncbi-cogs --just-do-it --num-threads 4` to set up NCBI's Clusters of Orthologous Groups database (one-time procedure). 
-
 - How to run:
   - Create an anvio environment: `conda create -n anvio-6.1 python=3.6`
   - Activate the environment: `conda activate anvio-6.1`
