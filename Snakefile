@@ -1,5 +1,6 @@
 import configparser
 import yaml
+import re
 
 contig_dir = config['all']['contig_dir']
 anvio_output_dir = config['all']['root'] + '/anvio_output'
@@ -8,8 +9,30 @@ files, = glob_wildcards(contig_dir + '/{file}.fa')
 
 workdir: config['all']['root']
 
+########
+### function to create the external genome path tsv
+########
+
+def get_external_genome_path(contig_db_list, output_fp):
+    with open(output_fp, 'w') as f:
+        f.write('name\tcontigs_db_path\n')
+        for db in contig_db_list:
+            name = re.sub(anvio_output_dir + '/', '', db)
+            name = re.sub('/contigs.db', '', name)
+            f.write(name + '\t' + db + '\n')
+
 rule all:
-    input: expand(anvio_output_dir + '/{file}/.DONEncbi_cog', file = files)
+    input: 
+        anvio_output_dir + '/external_genome_path.tsv'
+
+rule external_genome_path:
+    input:
+        contig_db = expand(anvio_output_dir + '/{file}/contigs.db', file = files),
+        sentinel = expand(anvio_output_dir + '/{file}/.DONEncbi_cog', file = files)
+    output:
+        anvio_output_dir + '/external_genome_path.tsv'
+    run:
+        get_external_genome_path(input.contig_db, output[0])    
 
 ########
 ### If you are running COGs for the first time, 
@@ -20,7 +43,7 @@ rule all:
 
 rule ncbi_cogs:
     input:
-        contig_db = anvio_output_dir + '/{file}/contigs.db',
+        contig_db = ancient(anvio_output_dir + '/{file}/contigs.db'),
         sentinel = anvio_output_dir + '/{file}/.DONEhmm'
     output:
         anvio_output_dir + '/{file}/.DONEncbi_cog'
@@ -35,7 +58,7 @@ rule ncbi_cogs:
 
 rule hmm:
     input:
-        anvio_output_dir + '/{file}/contigs.db'
+        ancient(anvio_output_dir + '/{file}/contigs.db')
     output:
         anvio_output_dir + '/{file}/.DONEhmm'
     threads:
@@ -60,7 +83,6 @@ rule get_contig_db:
                 --output-db-path {output} \
                 --project-name {params.file}
         """
-
 
 rule reformat_fasta:
     input: 
