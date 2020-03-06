@@ -7,8 +7,8 @@
     },
     "run_hmm":
     {
-        "h_vmem": "8G",
-        "mem_free": "2G",
-        "m_mem_free": "2G"
+        "h_vmem": "16G",
+        "mem_free": "5G",
+        "m_mem_free": "5G"
     }
 }

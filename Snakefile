@@ -96,7 +96,7 @@ rule ncbi_cogs:
             touch {output}
         """
 
-rule hmm:
+rule run_hmm:
     input:
         ancient(anvio_output_dir + '/{file}/contigs.db')
     output:
