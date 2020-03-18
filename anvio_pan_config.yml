@@ -11,7 +11,7 @@ hmm:
   threads: 4
 
 ncbi_cog:
-  threads: 8
+  threads: 4
 
 pan_genome:
   threads: 8
